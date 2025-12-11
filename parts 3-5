@@ -1,0 +1,285 @@
+//(PARTS III to V ONLY)
+// Online C compiler to run C program online
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+
+typedef struct {
+       char studentID[10]; // Unique identifier (e.g., "2024-00123")
+       char lastName[50];
+       char firstName[50];
+       char sex;
+       int age;
+       char course[20];
+       float GWA; // General Weighted Average
+   } Student;
+
+
+void sort(Student students[], int count){
+   for (int i = 0; i < count - 1; i++){
+       for (int j = 0; j < count - i - 1; j++){
+           if (strcmp(students[j].lastName, students[j+1].lastName) > 0) {
+               Student temporary = students[j];
+               students[j] = students[j+1];
+               students[j+1] = temporary;
+
+
+               for (int i = 0; i < count; i++){
+                   printf("%s\n%s\n%s\n%c\n%d\n%s\n%2f\n",
+                       students[i].studentID,
+                       students[i].lastName,
+                       students[i].firstName,
+                       students[i].sex,
+                       students[i].age,
+                       students[i].course,
+                       students[i].GWA);
+               }
+           }
+       }
+   }
+}
+
+
+void edit(Student students[], int index) {
+   int choice;
+   do {
+       printf("What would you like to edit?\n");
+       printf("1. Student ID\n");
+       printf("2. Last Name\n");
+       printf("3. First Name\n");
+       printf("4. Sex\n");
+       printf("5. Age\n");
+       printf("6. Course\n");
+       printf("7. GWA\n");
+       printf("8. Save & Exit\n");
+       printf("9. Cancel (discard changes)\n");
+       printf("Choice: ");
+       scanf("%d", &choice);
+       getchar();  // remove new line
+
+
+       switch(choice) {
+           case 1:
+               printf("Current Student ID: %s\n", students[index].studentID);
+               printf("Enter new Student ID: ");
+               fgets(students[index].lastName, sizeof(students[index].lastName), stdin);
+               students[index].lastName[strcspn(students[index].lastName, "\n")] = '\0';
+               printf("Student ID updated.\n");
+               break;
+
+
+           case 2:
+               printf("Current Last Name: %s\n", students[5].lastName);
+               printf("Enter new Last Name: ");
+               fgets(students[index].lastName, sizeof(students[index].lastName), stdin);
+               students[index].lastName[strcspn(students[index].lastName, "\n")] = '\0';
+               printf("Last Name updated.\n");
+               break;
+
+
+           case 3:
+               printf("Current First Name: %s\n", students[index].firstName);
+               printf("Enter new First Name: ");
+               fgets(students[index].firstName, sizeof(students[index].firstName), stdin);
+               students[index].firstName[strcspn(students[index].firstName, "\n")] = '\0';
+               printf("First Name updated.\n");
+               break;
+
+
+           case 4:
+               printf("Current Sex: %c\n", students[index].sex);
+               printf("Enter new Sex (M/F): ");
+               scanf("%c", &students[index].sex);
+               getchar();
+               printf("Sex updated.\n");
+               break;
+
+
+           case 5:
+               printf("Current Age: %d\n", students[index].age);
+               printf("Enter new Age: ");
+               scanf("%d", &students[index].age);
+               getchar();
+               printf("Age updated.\n");
+               break;
+
+
+           case 6:
+               printf("Current Course: %s\n", students[index].course);
+               printf("Enter new Course: ");
+               fgets(students[index].course, sizeof(students[index].course), stdin);
+               students[index].course[strcspn(students[index].course, "\n")] = '\0';
+               printf("Course updated.\n");
+               break;
+
+
+           case 7:
+               printf("Current GWA: %.2f\n", students[index].GWA);
+               printf("Enter new GWA: ");
+               scanf("%f", &students[index].GWA);
+               getchar();
+               printf("GWA updated.\n");
+               break;
+
+
+           case 8:
+               printf("Changes saved to memory.\n");
+               return;
+
+
+           case 9:
+               printf("Changes discarded.\n");
+               return;
+
+
+           default:
+               printf("Invalid choice!\n");
+       }
+   } while (choice != 8 && choice != 9);
+}
+
+
+//function to search a student by their student ID
+void search(Student students[], int count){
+   char searchID[11]; //extra char for null
+   char wantToEdit;
+   printf("Enter student ID:");
+   fgets(searchID, 11, stdin);
+   searchID[strcspn(searchID, "\n")] = '\0'; //remove new line
+   for (int i = 0; i < count; i++){
+       if (strcmp(students[i].studentID, searchID) == 0){
+           int index = i;
+           printf("Student found:\n");
+           printf("%s\n %s\n %s\n %c\n %d\n %s\n %f\n",
+           students[i].studentID,
+           students[i].firstName,
+           students[i].lastName,
+           students[i].sex,
+           students[i].age,
+           students[i].course,
+           students[i].GWA);
+           while (wantToEdit != 'Y' || wantToEdit != 'N') {
+               printf("Do you want to edit? (Y/N): ");
+               scanf(" %c", &wantToEdit);
+               if (wantToEdit == 'Y') {
+                   edit(students, index);
+               } else if (wantToEdit == 'N') {
+                   break;
+               }
+           }
+       }
+   }
+   printf("Student ID not found.");
+}
+
+
+int savetoCSV(Student students[], int count) {
+   FILE *file = fopen("C:/Users/sdss/Downloads/students.csv", "r");
+   if (file == NULL){
+       printf("Error opening file.");
+       return 1;
+   }
+
+
+   for (int i = 0; i < count; i++) {
+       fprintf(file, "%s,%s,%s,%c,%d,%s,%2f",
+           students[i].studentID,
+           students[i].lastName,
+           students[i].firstName,
+           students[i].sex,
+           students[i].age,
+           students[i].course,
+           students[i].GWA);
+   }
+}
+
+
+
+
+int main() {
+   //access file data and store to variables (temporary lang to, paki merge sa first parts ng allocation)
+   //!!ERROR DITO: nagmemerge ung student id at last name, so wag nyo gamitin tong file allocation ko
+   FILE *file = fopen("C:/Users/sdss/Downloads/students.csv", "r");
+   if (file == NULL){
+       printf("Error opening file.");
+       return 1;
+   }
+   int count = 0;
+   Student students[50]; //based sa number of students sa files, subject to change idk
+   char line[200]; //temporary placeholder per line in file
+   int menuChoice;
+
+
+   fgets(line, sizeof(line), file);
+
+
+   while (count < 23 && fgets(line, sizeof(line), file)){ //dapat di to 23, imerge na lang sa may allocation ng data sa first part
+       char *token = strtok(line, ",");
+       if (token) strcpy(students[count].studentID, token);
+
+
+       token = strtok(NULL, ",");
+       if (token) strcpy(students[count].lastName, token);
+
+
+       token = strtok(NULL, ",");
+       if (token) strcpy(students[count].firstName, token);
+
+
+       token = strtok(NULL, ",");
+       if (token) students[count].sex = token[0];
+
+
+       token = strtok(NULL, ",");
+       if (token) students[count].age = atoi(token);
+
+
+       token = strtok(NULL, ",");
+       if (token) strcpy(students[count].course, token);
+
+
+       token = strtok(NULL, ",");
+       if (token) students[count].GWA = atof(token);
+
+
+       count++;
+   }
+
+
+   fclose(file);
+
+
+
+
+   do {
+       printf("Select your option in the menu: \n");
+       printf("(1) Sort student last names alphabetically. \n");
+       printf("(2) Search student data using student ID. \n");
+       printf("(3) Exit Menu. \n");
+       scanf("%d", &menuChoice);
+       getchar();
+
+
+       switch (menuChoice){
+           case 1:
+               sort(students, count);
+
+
+           case 2:
+               search(students, count);
+
+
+           case 3:
+               return 0;
+
+
+           default:
+               printf("Invalid choice.");
+       }
+   } while (menuChoice != 3);
+
+
+   return 0;
+}
+
